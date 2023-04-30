@@ -116,6 +116,18 @@ def get_binance_us_symbols() -> List[Symbol]:
 
     return res
 
+def get_bybit_symbols() -> List[Symbol]:
+    response = requests.get("https://api.bybit.com/v2/public/symbols")    
+    res = []
+
+    for instrument in tqdm(response.json()['result']):
+        res.append(Symbol(
+            instrument['name'],
+            instrument['base_currency'],
+            instrument['quote_currency']
+        ))
+
+    return res
 
 def add_symbols(
         curr_symbols: dict, 
@@ -144,6 +156,7 @@ if __name__ == "__main__":
     add_symbols(symbols, get_coinbase_symbols(), "Coinbase")
     add_symbols(symbols, get_kucoin_symbols(), "Kucoin")
     add_symbols(symbols, get_binance_us_symbols(), "Binance.US")
+    add_symbols(symbols, get_bybit_symbols(), "Bybit")
 
     with open("../pkg/symbol/symbol_database.json", 'w') as f:
         json.dump(symbols, f)
